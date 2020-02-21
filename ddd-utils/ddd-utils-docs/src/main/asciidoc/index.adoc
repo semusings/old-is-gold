@@ -1,0 +1,30 @@
+= DDD Utils Reference Guide
+Bhuwan Prasad Upadhyay
+:doctype: book
+:toc:
+:toclevels: 4
+:source-highlighter: prettify
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:ddd-utils-repo: snapshot
+:github-tag: master
+:ddd-utils-docs-version: current
+:ddd-utils-docs: https://bhuwanupadhyay.github.io/ddd-utils/docs/{ddd-utils-docs-version}/reference
+:ddd-utils-docs-current: https://bhuwanupadhyay.github.io/ddd-utils/docs/current/reference
+:github-repo: bhuwanupadhyay/ddd-utils
+:github-raw: https://raw.github.com/{github-repo}/{github-tag}
+:github-code: https://github.com/{github-repo}/tree/{github-tag}
+:github-issues: https://github.com/{github-repo}/issues/
+:github-wiki: https://github.com/{github-repo}/wiki
+:github-master-code: https://github.com/{github-repo}/tree/master
+:sc-ext: java
+:dc-ext: html
+:dc-root: https://bhuwanupadhyay.github.io/ddd-utils/docs/{ddd-utils-docs-version}/api
+:java-javadoc: https://docs.oracle.com/javase/8/docs/api/
+// ======================================================================================
+
+include::getting-started.adoc[]
+include::appendix.adoc[]
+
+// ======================================================================================

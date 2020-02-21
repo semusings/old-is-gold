@@ -1,0 +1,25 @@
+[[getting-started]]
+= Getting Started
+
+[[getting-started-introducing-ddd-utils]]
+== Introducing DDD Utils
+DDD Utils contains the utility classes for domain driven development.
+
+Our primary goals are:
+
+* Provide a consistent api contract for DDD.
+* Provide helper classes for Railway Pattern.
+
+[[getting-started-maven-installation]]
+==== Maven Installation
+
+Add the following dependency in `pom.xml` file:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<dependency>
+		<groupId>io.github.bhuwanupadhyay</groupId>
+		<artifactId>ddd-core</artifactId>
+		<version>{ddd-utils-version}</version>
+	</dependency>
+----

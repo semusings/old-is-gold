@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <servers>
+        <server>
+            <id>sonatype</id>
+            <username>${sonatype.user}</username>
+            <password>${sonatype.passwd}</password>
+        </server>
+    </servers>
+</settings>

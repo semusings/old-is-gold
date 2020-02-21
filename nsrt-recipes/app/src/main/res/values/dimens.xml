@@ -1,0 +1,24 @@
+<resources>
+
+    <dimen name="text_navbar_title">18sp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin_small">8dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="text_menu_subtitle">12sp</dimen>
+    <dimen name="text_menu_title">19sp</dimen>
+    <dimen name="text_menu_bottom">3dp</dimen>
+    <dimen name="text_menu_smalltitle">10sp</dimen>
+    <dimen name="text_list_small">12sp</dimen>
+    <dimen name="component_bottom_small">2dp</dimen>
+    <dimen name="text_list_big">20sp</dimen>
+    <dimen name="text_list_sbig">15sp</dimen>
+    <dimen name="text_list_xbig">25sp</dimen>
+    <dimen name="text_list_extrasmall">10sp</dimen>
+    <dimen name="component_bottom_medium">8dp</dimen>
+    <dimen name="detail_title">18sp</dimen>
+    <dimen name="detail_sub">11sp</dimen>
+    <dimen name="activity_horizontal_margin_small_extra">4dp</dimen>
+    <dimen name="vote_height">140dp</dimen>
+    <dimen name="text_menu_sub">14sp</dimen>
+
+</resources>

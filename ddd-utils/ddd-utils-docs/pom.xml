@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.bhuwanupadhyay</groupId>
+        <artifactId>ddd-utils-build</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>ddd-utils-docs</artifactId>
+    <name>DDD Utils Docs</name>
+    <description>DDD Utils Docs</description>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.bhuwanupadhyay</groupId>
+            <artifactId>ddd-core</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <profiles>
+        <profile>
+            <id>full</id>
+            <activation>
+                <property>
+                    <name>full</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <includeDependencySources>true</includeDependencySources>
+                                    <dependencySourceIncludes>
+                                        <dependencySourceInclude>${project.groupId}:*</dependencySourceInclude>
+                                    </dependencySourceIncludes>
+                                    <sourceFileExcludes>io/github/bhuwanupadhyay/ddd-utils-docs/**/*.java</sourceFileExcludes>
+                                    <attach>false</attach>
+                                    <quiet>true</quiet>
+                                    <stylesheetfile>${basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
+                                    <links>
+                                        <link>https://docs.oracle.com/javase/8/docs/api</link>
+                                        <link>https://docs.oracle.com/javaee/7/api</link>
+                                    </links>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctor-maven-plugin</artifactId>
+                        <version>1.5.7.1</version>
+                        <executions>
+                            <execution>
+                                <id>generate-docbook</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>process-asciidoc</goal>
+                                </goals>
+                                <configuration>
+                                    <sourceDocumentName>index.adoc</sourceDocumentName>
+                                    <backend>docbook5</backend>
+                                    <doctype>book</doctype>
+                                    <attributes>
+                                        <docinfo>true</docinfo>
+                                        <ddd-utils-version>${revision}</ddd-utils-version>
+                                        <ddd-utils-docs-version>${revision}</ddd-utils-docs-version>
+                                        <ddd-utils-repo>https://github.com/BhuwanUpadhyay/ddd-utils</ddd-utils-repo>
+                                        <github-tag>${github-tag}</github-tag>
+                                    </attributes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.agilejava.docbkx</groupId>
+                        <artifactId>docbkx-maven-plugin</artifactId>
+                        <version>2.0.17</version>
+                        <configuration>
+                            <sourceDirectory>${basedir}/target/generated-docs</sourceDirectory>
+                            <includes>index.xml</includes>
+                            <xincludeSupported>true</xincludeSupported>
+                            <chunkedOutput>false</chunkedOutput>
+                            <foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
+                            <useExtensions>1</useExtensions>
+                            <highlightSource>1</highlightSource>
+                            <highlightXslthlConfig>${basedir}/src/main/docbook/xsl/xslthl-config.xml
+                            </highlightXslthlConfig>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>net.sf.xslthl</groupId>
+                                <artifactId>xslthl</artifactId>
+                                <version>2.1.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>net.sf.docbook</groupId>
+                                <artifactId>docbook-xml</artifactId>
+                                <version>5.0-all</version>
+                                <classifier>resources</classifier>
+                                <type>zip</type>
+                                <scope>runtime</scope>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>html-single</id>
+                                <goals>
+                                    <goal>generate-html</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <htmlCustomization>${basedir}/src/main/docbook/xsl/html-singlepage.xsl
+                                    </htmlCustomization>
+                                    <targetDirectory>${basedir}/target/docbook/htmlsingle</targetDirectory>
+                                    <postProcess>
+                                        <copy todir="${basedir}/target/contents/reference/htmlsingle">
+                                            <fileset dir="${basedir}/target/docbook/htmlsingle">
+                                                <include name="**/*.html"/>
+                                            </fileset>
+                                        </copy>
+                                        <copy todir="${basedir}/target/contents/reference/htmlsingle">
+                                            <fileset dir="${basedir}/src/main/docbook">
+                                                <include name="**/*.css"/>
+                                                <include name="**/*.png"/>
+                                                <include name="**/*.gif"/>
+                                                <include name="**/*.jpg"/>
+                                            </fileset>
+                                        </copy>
+                                    </postProcess>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>html</id>
+                                <goals>
+                                    <goal>generate-html</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <htmlCustomization>${basedir}/src/main/docbook/xsl/html-multipage.xsl
+                                    </htmlCustomization>
+                                    <targetDirectory>${basedir}/target/docbook/html</targetDirectory>
+                                    <chunkedOutput>true</chunkedOutput>
+                                    <postProcess>
+                                        <copy todir="${basedir}/target/contents/reference/html">
+                                            <fileset dir="${basedir}/target/docbook/html">
+                                                <include name="**/*.html"/>
+                                            </fileset>
+                                        </copy>
+                                        <copy todir="${basedir}/target/contents/reference/html">
+                                            <fileset dir="${basedir}/src/main/docbook">
+                                                <include name="**/*.css"/>
+                                                <include name="**/*.png"/>
+                                                <include name="**/*.gif"/>
+                                                <include name="**/*.jpg"/>
+                                            </fileset>
+                                        </copy>
+                                    </postProcess>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>pdf</id>
+                                <goals>
+                                    <goal>generate-pdf</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <foCustomization>${basedir}/src/main/docbook/xsl/pdf.xsl</foCustomization>
+                                    <targetDirectory>${basedir}/target/docbook/pdf</targetDirectory>
+                                    <postProcess>
+                                        <copy todir="${basedir}/target/contents/reference">
+                                            <fileset dir="${basedir}/target/docbook">
+                                                <include name="**/*.pdf"/>
+                                            </fileset>
+                                        </copy>
+                                        <move file="${basedir}/target/contents/reference/pdf/index.pdf"
+                                              tofile="${basedir}/target/contents/reference/pdf/ddd-utils-reference.pdf"/>
+                                    </postProcess>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>epub</id>
+                                <goals>
+                                    <goal>generate-epub3</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <epub3Customization>${basedir}/src/main/docbook/xsl/epub.xsl</epub3Customization>
+                                    <targetDirectory>${basedir}/target/docbook/epub</targetDirectory>
+                                    <preProcess>
+                                        <copy todir="${basedir}/target/docbook/epub/images">
+                                            <fileset dir="${basedir}/src/main/docbook/images">
+                                                <include name="*.png"/>
+                                            </fileset>
+                                        </copy>
+                                    </preProcess>
+                                    <postProcess>
+                                        <copy todir="${basedir}/target/contents/reference/epub">
+                                            <fileset dir="${basedir}/target/docbook">
+                                                <include name="**/*.epub"/>
+                                            </fileset>
+                                        </copy>
+                                        <move file="${basedir}/target/contents/reference/epub/index.epub"
+                                              tofile="${basedir}/target/contents/reference/epub/ddd-utils-reference.epub"/>
+                                    </postProcess>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
