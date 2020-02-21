@@ -1,0 +1,10 @@
+= Introduction
+
+== What Is Serverless ?
+Serverless most often refers to serverless application. Serverless applications
+are ones that don't require you to provision or manage any servers. You can focus on
+core product and business logic instead of responsibilities like operating system (OS) access control,
+OS patching, provisioning, right-sizing, scaling, and availability - the serverless platform manage
+these responsibilities for you.
+
+

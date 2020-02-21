@@ -1,0 +1,5 @@
+= API First
+
+- https://github.com/dwyl/learn-api-design
+- https://www.troyhunt.com/your-api-versioning-is-wrong-which-is/
+- https://content.pivotal.io/blog/api-versioning

@@ -1,0 +1,14 @@
+[[preface]]
+= Preface
+
+Inventory offers a service to manage day to day inventory operations.
+
+[[project]]
+[preface]
+== Project Metadata
+
+* Version control: https://github.com/k8s-orderg/inventory
+* Bugtracker: https://github.com/k8s-orderg/inventory/issues
+* Release repository: https://artifact.xxx.io/libs-release
+* Milestone repository: https://artifact.xxx.io/libs-milestone
+* Snapshot repository: https://artifact.xxx.io/libs-snapshot

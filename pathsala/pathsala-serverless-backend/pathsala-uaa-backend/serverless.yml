@@ -1,0 +1,34 @@
+service: pathsala-uaa-service
+
+provider:
+  name: aws
+  runtime: java8
+  region: us-east-1
+  environment:
+    USER_POOL_APP_CLIENT_ID: ${opt:app-client-id}
+
+package:
+  artifact: build/distributions/pathsala-uaa-backend-1.0-SNAPSHOT.zip
+
+functions:
+  signup-user:
+    handler: pathsala.serverless.uaa.handler.SignUpHandler
+    events:
+    - http:
+        path: auth/signup
+        method: post
+        cors: true
+  confirm-signup:
+    handler: pathsala.serverless.uaa.handler.ConfirmSignupHandler
+    events:
+    - http:
+        path: auth/signup/confirm
+        method: post
+        cors: true
+  user-auth:
+    handler: pathsala.serverless.uaa.handler.AuthenticationHandler
+    events:
+    - http:
+        path: auth/login
+        method: post
+        cors: true

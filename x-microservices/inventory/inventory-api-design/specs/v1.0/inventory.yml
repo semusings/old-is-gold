@@ -1,0 +1,34 @@
+openapi: "3.0.2"
+info:
+  version: 1.0-snapshot
+  title: Inventory
+  description: API for inventory management
+paths:
+  /products:
+    post:
+      tags:
+        - product
+      operationId: create product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'create-product-request.yml'
+      responses:
+        '200':
+          description: create success response
+          content:
+            application/json:
+              schema:
+                $ref: 'create-product-response.yml'
+    get:
+      tags:
+        - product
+      operationId: find all products
+      responses:
+        '200':
+          description: list of products
+          content:
+            application/json:
+              schema:
+                $ref: 'product-response.yml'

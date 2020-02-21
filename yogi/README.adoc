@@ -1,0 +1,8 @@
+= Yogi
+
+The guideline and tools to remove technical debt and automate full development cycle.
+
+=== Code Quality
+* qulice-maven-plugin
+
+

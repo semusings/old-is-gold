@@ -1,0 +1,32 @@
+version: "3"
+services:
+  mongo:
+    image: mongo
+    ports:
+      - "27017"
+  axonserver:
+    image: axoniq/axonserver
+    ports:
+      - "8124"
+  inventory-command:
+    image: io.github.bhuwanupadhyay/inventory-command:1.0-snapshot
+    environment:
+      - spring.profiles.active=production
+      - spring.data.mongodb.host=mongo
+      - eureka.client.enabled=false
+      - axon.axonserver.servers=axonserver
+    links:
+      - mongo
+      - axonserver
+    ports:
+      - "9000:8080"
+  inventory-query:
+    image: io.github.bhuwanupadhyay/inventory-query:1.0-snapshot
+    environment:
+      - spring.profiles.active=production
+      - eureka.client.enabled=false
+      - axon.axonserver.servers=axonserver
+    links:
+      - axonserver
+    ports:
+      - "9001:8080"

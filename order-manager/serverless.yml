@@ -1,0 +1,126 @@
+service: order-manager-api
+
+custom:
+  stage: ${opt:stage}
+  region: ${opt:region, self:provider.region}
+  stack_name: ${self:service}-${self:custom.stage}
+  dynamodb_table: ${self:custom.stack_name}-order
+  dynamodb_arn: arn:aws:dynamodb:${self:custom.region}:*:table/${self:custom.dynamodb_table}
+  kinesis_stream: ${self:custom.stack_name}-order-manager-stream
+  kinesis_stream_arn: arn:aws:kinesis:${self:custom.region}:*:stream/${self:custom.kinesis_stream}
+
+provider:
+  name: aws
+  runtime: java8
+  region: us-east-1
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+    - dynamodb:Query
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    - dynamodb:UpdateItem
+    - dynamodb:DeleteItem
+    - dynamodb:DescribeTable
+    Resource: ${self:custom.dynamodb_arn}
+  - Effect: Allow
+    Action:
+    - "kinesis:*"
+    Resource: ${self:custom.kinesis_stream_arn}
+
+  environment:
+    TABLE: ${self:custom.dynamodb_table}
+    ORDER_MANAGER_STREAM_NAME: ${self:custom.kinesis_stream}
+
+package:
+  artifact: lambda-bundle/target/lambda.jar
+
+functions:
+  GetOrder:
+    name: ${self:custom.stack_name}-GetOrder
+    handler: bhuwanupadhyay.order.GetOrderLambda
+    description: Get an order for <orderId>
+    events:
+    - http:
+        path: orders/{orderId}
+        method: get
+        request:
+          parameters:
+            paths:
+              orderId: true
+
+  GetOrders:
+    name: ${self:custom.stack_name}-GetOrders
+    handler: bhuwanupadhyay.order.GetOrdersLambda
+    description: List all orders
+    events:
+    - http:
+        path: orders
+        method: get
+
+  ReceiveOrder:
+    name: ${self:custom.stack_name}-ReceiveOrder
+    handler: bhuwanupadhyay.order.ReceiveOrderLambda
+    description: Receive an order - to create new order
+    events:
+    - http:
+        path: orders
+        method: post
+
+  PrepareOrder:
+    name: ${self:custom.stack_name}-PrepareOrder
+    handler: bhuwanupadhyay.order.PrepareOrderLambda
+    description: Prepare Order - to prepare an order
+    events:
+    - stream:
+        type: kinesis
+        arn:
+          Fn::GetAtt:
+          - KinesisStream
+          - Arn
+
+  ProcessPayment:
+    name: ${self:custom.stack_name}-ProcessPayment
+    handler: bhuwanupadhyay.order.ProcessPaymentLambda
+    description: Process Payment - to collect payment for an order
+    events:
+    - stream:
+        type: kinesis
+        arn:
+          Fn::GetAtt:
+          - KinesisStream
+          - Arn
+
+  ShipOrder:
+    name: ${self:custom.stack_name}-ShipOrder
+    handler: bhuwanupadhyay.order.ShipOrderLambda
+    description: Ship an order - to ship an order
+    events:
+    - stream:
+        type: kinesis
+        arn:
+          Fn::GetAtt:
+          - KinesisStream
+          - Arn
+
+resources:
+  Resources:
+    KinesisStream:
+      Type: AWS::Kinesis::Stream
+      Properties:
+        Name: ${self:custom.kinesis_stream}
+        ShardCount: 1
+    Order:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.dynamodb_table}
+        AttributeDefinitions:
+        - AttributeName: orderId
+          AttributeType: S
+        KeySchema:
+        - AttributeName: orderId
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

@@ -1,0 +1,42 @@
+# Site
+name: Bhuwan Pd. Upadhyay
+description: Typewriter for ( Java | Cloud Native | Domain Driven Development )
+meta_description: "Typewriter for ( Java | Cloud Native | Domain Driven Development )."
+logo: 'assets/images/logo.png'
+favicon: 'assets/images/favicon.ico'
+paginate: 12
+baseurl:
+email: 'bhuwan.upadhyay49@gmail.com'
+google_analytics: 'UA-115078304-2'
+disqus: 'bhuwanprasadupadhyay'
+sharethis: '<script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5a6b2fe4fb197a0011c589f6&product=sticky-share-buttons"></script>'
+
+# Authors
+authors:
+  developerbhuwan:
+    name: Bhuwan Pd. Upadhyay
+    display_name: Bhuwan Pd. Upadhyay
+    gravatar: 7ff39f234eb96ac039531e70a056fc40
+    email: bhuwan.upadhyay49@gmail.com
+    web: https://bhuwanupadhyay.github.io/
+    twitter: https://twitter.com/IAmVuwan
+    description: "Java Developer | Cloud Native and Domain Driven Development Practitioner"
+
+# Plugins
+plugins:
+- jekyll-paginate
+- jekyll-archives
+- jekyll-seo-tag
+- jekyll-sitemap
+
+# Archives
+jekyll-archives:
+  enabled:
+  - categories
+  layout: archive
+  permalinks:
+    category: '/category/:name/'
+
+# Other
+markdown: kramdown
+highlighter: rouge

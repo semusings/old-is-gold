@@ -1,0 +1,5 @@
+= CQRS
+
+image::img/cqrs.jpg[]
+
+image::img/CQRS-Architecture.png[]

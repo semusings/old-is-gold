@@ -1,0 +1,31 @@
+=== References
+* https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/microservice-ddd-cqrs-patterns/apply-simplified-microservice-cqrs-ddd-patterns
+* https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/microservice-ddd-cqrs-patterns/ddd-oriented-microservice
+* https://www.nexocode.com/blog/posts/smooth-implementation-cqrs-es-with-sping-boot-and-axon/
+* https://www.nexocode.com/blog/posts/cqrs-and-event-sourcing/
+
+=== Data Access Framework
+* http://jdbi.org
+* http://www.querydsl.com/
+* http://www.mybatis.org/
+* https://github.com/knowm/Yank
+
+=== Wireframe Tools
+* Axure
+* Balsamiq
+* UxPin
+* JustInMind
+* Protoshare
+* Pidoco
+* Visio
+* Mockflow
+* Indigo
+* Powerpoint
+
+=== EVENT STORMING
+- https://realtimeboard.com/
+- https://github.com/mariuszgil/awesome-eventstorming
+
+=== REST Modeling
+- https://raml.org/developers/design-your-api
+- https://restlet.com/open-source/downloads/current/

@@ -1,0 +1,29 @@
+version: "3"
+services:
+  db:
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: inventory
+      POSTGRES_DB: inventory_db
+    ports:
+    - 5432
+  k8s-og-inventory:
+    image: devbhuwan/k8s-og-inventory:v1
+    build:
+      context: cicd/docker
+      dockerfile: Dockerfile
+      args:
+      - JAR_FILE=inventory.jar
+    ports:
+    - 8080
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/inventory_db
+      SPRING_DATASOURCE_USERNAME: inventory
+      SPRING_DATASOURCE_PASSWORD: inventory
+      SPRING_PROFILES_ACTIVE: postgres
+    restart: always
+    links:
+    - db
+    depends_on:
+    - db

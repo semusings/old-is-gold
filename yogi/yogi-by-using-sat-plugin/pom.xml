@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>yogi</artifactId>
+        <groupId>io.github.bhuwanupadhyay</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>yogi-by-using-sat-plugin</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openhab.tools.sat</groupId>
+                <artifactId>sat-plugin</artifactId>
+                <version>0.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                            <goal>pmd</goal>
+                            <goal>spotbugs</goal>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <!--<configuration>-->
+                <!--<checkstyleRuleset>build-tools/checkstyle/binding.xml</checkstyleRuleset>-->
+                <!--<checkstyleFilter>build-tools/checkstyle/suppression.xml</checkstyleFilter>-->
+                <!--<pmdRuleset>build-tools/pmd/binding.xml</pmdRuleset>-->
+                <!--<pmdFilter>build-tools/pmd/suppression.properties</pmdFilter>-->
+                <!--<spotbugsInclude>build-tools/findbugs/binding.xml</spotbugsInclude>-->
+                <!--<spotbugsExclude>build-tools/findbugs/exclude.xml</spotbugsExclude>-->
+                <!--<spotbugsRuleset>build-tools/findbugs/visitors.xml</spotbugsRuleset>-->
+                <!--</configuration>-->
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

@@ -1,0 +1,42 @@
+<clr-main-container>
+  <clr-header class="header-3">
+    <div class="branding">
+      <a href="#" class="nav-link">
+        <clr-icon shape="objects" class="is-solid"></clr-icon>
+        <span class="title"><b>PATHSALA</b>&nbsp;<sub>v1.0.0</sub></span>
+      </a>
+    </div>
+    <div class="header-nav" [clr-nav-level]="1">
+      <a class="nav-link" href="#" [routerLink]="['/pathsala/student']" routerLinkActive="active">
+        <span class="nav-text">Student</span>
+      </a>
+      <a class="nav-link" href="#" [routerLink]="['/pathsala/accountancy']" routerLinkActive="active">
+        <span class="nav-text">Accountancy</span>
+      </a>
+      <a class="nav-link" href="#" [routerLink]="['/pathsala/library']" routerLinkActive="active">
+        <span class="nav-text">Library</span>
+      </a>
+    </div>
+    <div class="header-actions">
+      <clr-dropdown [clrCloseMenuOnItemClick]="false">
+        <button type="button" clrDropdownTrigger>
+          <clr-icon shape="user" class="is-solid"></clr-icon>
+          <clr-icon shape="caret down"></clr-icon>
+        </button>
+        <!--suppress HtmlUnknownAttribute -->
+        <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+          <label class="dropdown-header">{{user.username}}</label>
+          <div class="dropdown-divider"></div>
+          <button type="button" clrDropdownItem>View Profile</button>
+          <button type="button" clrDropdownItem (click)="logout()">Logout</button>
+        </clr-dropdown-menu>
+      </clr-dropdown>
+      <div>&nbsp;</div>
+    </div>
+  </clr-header>
+  <div class="content-container">
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</clr-main-container>

@@ -1,0 +1,12 @@
+rootProject.name = 'pathsala'
+include 'core'
+include 'student-manager'
+include 'terraform'
+include 'pathsala-serverless-backend:shared-serverless'
+findProject(':pathsala-serverless-backend:shared-serverless')?.name = 'shared-serverless'
+include 'pathsala-serverless-backend:student-manager-serverless-backend'
+findProject(':pathsala-serverless-backend:student-manager-serverless-backend')?.name = 'student-manager-serverless-backend'
+include 'pathsala-serverless-backend:pathsala-uaa-backend'
+findProject(':pathsala-serverless-backend:pathsala-uaa-backend')?.name = 'pathsala-uaa-backend'
+include 'pathsala-backend-microservices'
+

@@ -1,0 +1,1 @@
+insert into inventory_item (item_id) values ('12345');

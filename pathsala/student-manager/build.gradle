@@ -1,0 +1,4 @@
+dependencies {
+    compile(project(":core"))
+    testCompile("com.fasterxml.jackson.core:jackson-databind:2.9.6")
+}

@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.0.6.RELEASE'
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    compile project(':ordering:ordering-domain')
+
+    compileOnly 'org.projectlombok:lombok:1.16.22'
+
+    testCompile 'org.assertj:assertj-core:3.11.1'
+    testCompile 'org.mockito:mockito-junit-jupiter:2.23.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.1.0'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+[bootJar, bootRun]*.enabled = false
+jar.enabled = true
+
+repositories {
+    jcenter()
+    mavenLocal()
+}

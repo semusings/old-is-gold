@@ -1,0 +1,7 @@
+[[glossary]]
+[appendix, glossary]
+= Glossary
+
+Inv::
+   Inventory
+

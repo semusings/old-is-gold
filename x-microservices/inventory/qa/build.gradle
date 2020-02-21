@@ -1,0 +1,39 @@
+buildscript {
+    ext {
+        karateVersion = '0.9.0'
+        masterThoughtVersion = '3.8.0'
+    }
+}
+
+apply plugin: 'java'
+
+sourceSets {
+    test {
+        java {
+            srcDir file('src/test/java')
+            exclude '**/*UiRunner*.java'
+        }
+        resources {
+            srcDir file('src/test/java')
+            exclude '**/*.java'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
+    compile 'commons-io:commons-io:2.5'
+    testCompile 'junit:junit:4.12'
+    testCompile "com.intuit.karate:karate-junit4:${karateVersion}"
+    testCompile "com.intuit.karate:karate-netty:${karateVersion}"
+    testCompile "net.masterthought:cucumber-reporting:${masterThoughtVersion}"
+}
+
+test {
+    enabled "true".equals(System.getProperty("test.enabled"))
+
+    include '**/*InventoryTestParallel*'
+    systemProperty "karate.options", System.properties.getProperty("karate.options")
+    systemProperty "karate.env", System.properties.getProperty("karate.env")
+    outputs.upToDateWhen { false }
+}

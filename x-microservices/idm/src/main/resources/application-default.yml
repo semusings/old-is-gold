@@ -1,0 +1,6 @@
+logging:
+  pattern:
+    console: "%msg%n"
+  level:
+    org.springframework: INFO
+    io.github.bhuwanupadhyay: INFO

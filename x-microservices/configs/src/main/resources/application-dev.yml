@@ -1,0 +1,8 @@
+logging:
+  file: logs/configs.development.log
+  pattern:
+    console: "%d %-5level %logger : %msg%n"
+    file: "%d %-5level [%thread] %logger : %msg%n"
+  level:
+    org.springframework.web: DEBUG
+    io.github.bhuwanupadhyay: DEBUG

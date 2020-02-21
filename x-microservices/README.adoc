@@ -1,0 +1,45 @@
+= Microservices
+
+image:https://img.shields.io/github/license/bhuwanupadhyay/microservices.svg?style=for-the-badge["GitHub license",link="https://github.com/bhuwanupadhyay/microservices/blob/master/LICENSE"]
+
+Developing microservices is not easy task if we don't have
+right kind of expertize, clear business requirements and proper plan.
+
+image:https://badge.waffle.io/bhuwanupadhyay/microservices.svg?columns=all&style=flat-square["Waffle.io - Columns and their card count", link="https://waffle.io/bhuwanupadhyay/microservices"]
+
+---
+
+[source]
+----
+The purpose of software engineering is to control complexity, not to create it. - Dr. Pamela Zave
+----
+
+== Requirement Survival Guide
+
+*Terms:* BUSINESS -> FUNCTIONS -> CONDITIONS -> FEATURES
+
+*Development Fact:* The sooner you code; the later you finish
+
+*Mitigation Side Effects:*
+
+* Ubiquitous language everywhere
+* Focus on tasks
+* Don't start until you understand input and output of each business workflow
+* Learn enough rules to implement each business process
+
+== Eventstorming
+* Think of the events in your domain
+* Write description on sticky notes
+* Add sticky notes to the timeline
+* Now order notes as appropriate
+
+== Development Flow
+
+*Eventstorming* -> *Wireframes* -> *Customer Verification* -> *CQRS + DDD*
+
+* Wireframe -> Command -> Workflow -> Persistence
+* Wireframe -> Query
+
+== Team Friendly
+
+*Simplified Design* -> *Reduced risk of design errors* -> *Reduced need super-skills* -> managing project becomes easy.

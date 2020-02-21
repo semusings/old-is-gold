@@ -1,0 +1,8 @@
+type: object
+title: product response
+description: product response in inventory.
+properties:
+  id:
+    type: string
+  name:
+    type: string

@@ -1,0 +1,18 @@
+image:https://spring.io/badges/spring-data-jdbc/ga.svg["Spring Data JDBC", link="https://spring.io/projects/spring-data-jdbc#learn"]
+image:https://spring.io/badges/spring-data-jdbc/snapshot.svg["Spring Data JDBC", link="https://spring.io/projects/spring-data-jdbc#learn"]
+
+= Inventory [Inventory Management Service]
+
+The primary goal of the `Inventory` project is to manage inventory operations.
+
+== Features
+
+-> Retrieval of products
+   - You use the `GET` operation on the `api/inventory/products` element to request information about the products.
+
+-> Retrieval of shortage of products
+    - You use the `GET` operation on the `api/inventory/products/shortage` element to request information about the shortage products.
+
+== License
+
+link:LICENSE.txt

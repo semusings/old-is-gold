@@ -1,0 +1,173 @@
+[[chapter-1]]
+= Business Problem Analysis and Cloud Architecture
+
+On this chapter, we will discuss business requirement of Library Management System(LMS). Also,
+we will define our cloud architecture for LMS.
+
+===  Library Management System (LMS)
+
+==== Product Functions
+There will be two different users who can use this product in different way:
+
+1. Librarian
+
+    * Librarian will have access to any information and main control.
+
+    * Librarian can add, modify or delete resource
+
+    * Librarian can register new members
+
+    * Librarian can check in check out resources.
+
+    * Librarian have control to payment system
+
+2. Registered Members
+
+    * Member can search the availability of needed resources
+
+    * Members can renew their resource
+
+    * Members can view their membership information, rental history information,
+      payment information, due dates…etc. from online
+
+
+==== Functional Requirements
+
+-> **Members**
+
+|===
+| Group By  | FR No. | Description
+
+| *Logging In*
+| FR1
+| The System shall verify valid ID and Password.
+
+| -
+| FR2
+| The System shall not allow to enter the system with invalid ID or Password.
+
+| -
+| FR3
+| The System shall allow member to enter with valid ID and Password.
+
+| *Search*
+| FR4
+| The System shall allow members to be able to search for available resource by title,
+  Resource ID, Author Name
+
+| -
+| FR5
+| The System shall display the search results with the details of preferred Resource.
+
+| *Renew Resource*
+| FR6
+| The System shall allow members to renew the resource within 72 hours before due date.
+
+| *Manage/View Account*
+| FR7
+| The System shall allow members to view history containing information such as list of
+  resource rented, due date, renewal date, and status.
+
+| -
+| FR8
+| The System shall allow update their personal information such as phone number, address,
+  email address, password.
+
+| *Payment Management*
+| FR9
+| The System shall display the due payment, description and deadline to the customer.
+
+| -
+| FR10
+| The System shall provide member payment facility that will store payment information
+  and data.
+
+| -
+| FR11
+| The system shall collect and verify payment information made by member.
+
+| -
+| FR12
+| The System shall allow member to see their payment history containing information
+  such as purpose, payment ID, date of payment.
+
+|===
+
+-> **Librarian**
+
+|===
+| Group By  | FR No. | Description
+
+| *Admin Access*
+| FR13
+| The System shall verify admin login info to provide all access privilege.
+
+| *Register Members*
+| FR14
+| The System shall store the registered id in the membership database.
+
+| *Update Resource*
+| FR15
+| The System shall allow add, delete or edit resource with their details such as resource
+  id, resource name, description of resource, location, category and author.
+
+| *Check In/Check Out*
+| FR16
+| The System shall record the transaction details such as Resource ID, Member ID, Due
+  Date, Check out Date, Checked in Date, Status.
+
+|===
+
+==== Non Functional Requirements
+
+|===
+| Group By  | NonFR No. | Description
+
+| *Performance Requirements*
+| NF1
+| Database should be updated within a second.
+
+| -
+| NF2
+| Search results should be displayed within a second.
+
+| -
+| NF3
+| User Interface shall not take more than 3 seconds to load.
+
+| -
+| NF4
+| Login should be validated within 2 seconds.
+
+| *Security Requirements*
+| NF5
+| Every external communication between server and end user takes place through VPN.
+
+| -
+| NF6
+| Payment Information are protected and encrypted.
+
+| -
+| NF7
+| Payment transaction is done with HTTP over Secure Protocol.
+
+| *Safety Requirements*
+| NF8
+| In the event of failure, there should be another server be on standby to provide fault
+  tolerance capability.
+
+| *Capacity Requirements*
+| NF9
+| Not more than 10,000 members to be registered.
+
+| *User Interface Requirement*
+| NF10
+| The UI is loaded from the server to any web browser.
+
+| *Communication Interface*
+| NF11
+| We will be using HTTPS/HTTP protocol for the communication over the server.
+
+|===
+
+==== Event storming - LMS

@@ -1,0 +1,33 @@
+<div class="login-wrapper">
+  <form class="login" [formGroup]="form" (ngSubmit)="login(form.value)">
+    <section class="title">
+      <h3 class="welcome">Welcome to</h3>
+      Cloud Pathsala
+      <h5 class="hint">Use your user to sign in or create one now</h5>
+    </section>
+    <div class="login-group">
+      <div class="alert alert-danger" *ngIf="fh.hasError(form, 'username')">
+        Username must be at least 3 characters long.
+      </div>
+      <input class="username" type="text" [formControl]="form.controls['username']" placeholder="Username">
+      <div class="alert alert-danger" *ngIf="fh.hasError(form, 'password')">
+        Password must be at least 6 characters long.
+      </div>
+      <input class="password" type="password" [formControl]="form.controls['password']" placeholder="Password">
+      <div class="checkbox">
+        <input type="checkbox" id="rememberme">
+        <label for="rememberme">
+          Remember me
+        </label>
+      </div>
+      <div class="error active" *ngIf="errorOnLogin">
+        Invalid Username/Password
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Login</button>
+      <button type="button" class="btn btn-default" (click)="loginWithGoogle()">Login with google</button>
+      <div class="col-lg-12">
+        Don't have an account? &nbsp;<a [routerLink]="'/signup'">Sign up</a>
+      </div>
+    </div>
+  </form>
+</div>

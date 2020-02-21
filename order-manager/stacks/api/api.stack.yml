@@ -1,0 +1,442 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Serverless Stack CI/CD - API
+
+Parameters:
+  TLD:
+    Type: String
+    Description: TLD name needed by Route53 to perform DNS (example.com)
+    Default: ''
+  Domain:
+    Type: String
+    Description: Domain name for your api (api.example.com)
+    Default: ''
+  Path:
+    Type: String
+    Description: The path part of your api (api.example.com/path)
+    Default: 'api'
+  Stage:
+    Type: String
+    Description: The deployment stage used by API Gateway
+    Default: 'api'
+
+Conditions:
+  UseCustomDomain: !And
+  - !Not [!Equals [!Ref TLD, '']]
+  - !Not [!Equals [!Ref Domain, '']]
+
+Resources:
+
+  #
+  # Role that our Lambda will assume to provide access to other AWS resources
+  #
+  IamRoleLambdaExecution:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: '/'
+
+  #
+  # Create a Policy and attach it to our Lambda Role.
+  #
+  IamPolicyLambdaExecution:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: IamPolicyLambdaExecution
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - logs:CreateLogGroup
+          - logs:CreateLogStream
+          Resource: !Sub 'arn:aws:logs:${AWS::Region}:*:*'
+        - Effect: Allow
+          Action:
+          - logs:PutLogEvents
+          Resource: !Sub 'arn:aws:logs:${AWS::Region}:*:*'
+      Roles:
+      - Ref: IamRoleLambdaExecution
+
+  #
+  # Lambda Deployment - API Gateway alarms
+  #
+  5xxAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: RestApi
+    Properties:
+      AlarmDescription: 5xx alarm for api gateway
+      Namespace: 'AWS/ApiGateway'
+      MetricName: 5XXError
+      Dimensions:
+      - Name: ApiName
+        Value: !Ref RestApi
+      Statistic: Sum
+      Period: '60'
+      EvaluationPeriods: '3'
+      Threshold: '10'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+  4xxAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: RestApi
+    Properties:
+      AlarmDescription: 4xx alarm for api gateway
+      Namespace: 'AWS/ApiGateway'
+      MetricName: 4XXError
+      Dimensions:
+      - Name: ApiName
+        Value: !Ref RestApi
+      Statistic: Sum
+      Period: '60'
+      EvaluationPeriods: '3'
+      Threshold: '10'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+  LatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: RestApi
+    Properties:
+      AlarmDescription: latency alarm for api gateway
+      Namespace: 'AWS/ApiGateway'
+      MetricName: Latency
+      Dimensions:
+      - Name: ApiName
+        Value: !Ref RestApi
+      Statistic: Average
+      Period: '60'
+      EvaluationPeriods: '3'
+      Threshold: '25000'
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+
+  #
+  # Our Lambda functions.  Basic code has been added.  You will replace the code later via your Github repo.
+  #
+  ReceiveOrder:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: bhuwanupadhyay.order.GetOrderLambda
+      Timeout: 5
+      Role:
+        Fn::GetAtt:
+        - IamRoleLambdaExecution
+        - Arn
+      Runtime: java8
+      MemorySize: 512
+      CodeUri: lambda.jar
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: Canary10Percent5Minutes
+        Alarms:
+        - !Ref 5xxAlarm
+        - !Ref 4xxAlarm
+        - !Ref LatencyAlarm
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - dynamodb:PutItem
+          Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${Table}'
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: orders
+            Method: POST
+  GetOrder:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: bhuwanupadhyay.order.GetOrderLambda
+      Timeout: 5
+      Role:
+        Fn::GetAtt:
+        - IamRoleLambdaExecution
+        - Arn
+      Runtime: java8
+      MemorySize: 512
+      CodeUri: lambda.jar
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: Canary10Percent5Minutes
+        Alarms:
+        - !Ref 5xxAlarm
+        - !Ref 4xxAlarm
+        - !Ref LatencyAlarm
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - dynamodb:GetItem
+          Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${Table}'
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: orders/{orderId}
+            Method: GET
+  GetOrders:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: bhuwanupadhyay.order.GetOrdersLambda
+      Timeout: 5
+      Role:
+        Fn::GetAtt:
+        - IamRoleLambdaExecution
+        - Arn
+      Runtime: java8
+      MemorySize: 512
+      CodeUri: lambda.jar
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: Canary10Percent5Minutes
+        Alarms:
+        - !Ref 5xxAlarm
+        - !Ref 4xxAlarm
+        - !Ref LatencyAlarm
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - dynamodb:GetItem
+          Resource: !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${Table}'
+      Environment:
+        Variables:
+          TABLE: !Ref Table
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: orders
+            Method: GET
+
+  #
+  # Create the database table
+  #
+  Table:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: orderId
+        Type: String
+
+  #
+  # Create the API Gateway
+  #
+  RestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Ref AWS::StackName
+
+  ApiGatewayResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt RestApi.RootResourceId
+      PathPart: !Ref Path #ex. example.com/api.
+      RestApiId: !Ref RestApi
+
+  ApiGatewayResourceProxy:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref ApiGatewayResource
+      PathPart: '{proxy+}'
+      RestApiId: !Ref RestApi
+
+  ApiGatewayMethodOptions:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      ResourceId: !Ref ApiGatewayResourceProxy
+      RestApiId: !Ref RestApi
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+        - StatusCode: 200
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'"
+            method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+            method.response.header.Access-Control-Allow-Origin: "'*'"
+            method.response.header.Access-Control-Allow-Credentials: "'false'"
+          ResponseTemplates:
+            application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+      - StatusCode: 200
+        ResponseModels:
+          application/json: 'Empty'
+        ResponseParameters:
+          method.response.header.Access-Control-Allow-Headers: false
+          method.response.header.Access-Control-Allow-Methods: false
+          method.response.header.Access-Control-Allow-Origin: false
+          method.response.header.Access-Control-Allow-Credentials: true
+
+  ApiGatewayMethodAny:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      RequestParameters: {}
+      ResourceId: !Ref ApiGatewayResource
+      RestApiId: !Ref RestApi
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+          - ''
+          - - 'arn:aws:apigateway:'
+            - Ref: AWS::Region
+            - ':lambda:path/2015-03-31/functions/'
+            - !Ref ReceiveOrder.Alias
+            - '/invocations'
+      MethodResponses: []
+
+  ApiGatewayMethodProxyAny:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: ANY
+      RequestParameters: {}
+      ResourceId: !Ref ApiGatewayResourceProxy
+      RestApiId: !Ref RestApi
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri:
+          Fn::Join:
+          - ''
+          - - 'arn:aws:apigateway:'
+            - Ref: AWS::Region
+            - ':lambda:path/2015-03-31/functions/'
+            - !Ref ReceiveOrder.Alias
+            - '/invocations'
+      MethodResponses: []
+
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref RestApi
+      StageName: !Ref Stage # Maps to the custom domain name.  BasePathMapping.Stage
+    DependsOn:
+    - ApiGatewayMethodOptions
+    - ApiGatewayMethodAny
+    - ApiGatewayMethodProxyAny
+
+  #
+  # We need to give API Gateway permission to invoke our Lambda function.
+  #
+  PermissionForAPIGatewayToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+    - ReceiveOrder
+    Properties:
+      Action: lambda:invokeFunction
+      FunctionName: !Ref ReceiveOrder.Alias
+      Principal: apigateway.amazonaws.com
+
+  #
+  # SSL Certificate needed by CloudFront.
+  #
+  SSL:
+    Type: AWS::CertificateManager::Certificate
+    Condition: UseCustomDomain
+    Properties:
+      DomainName: !Ref Domain
+      DomainValidationOptions:
+      - DomainName: !Ref Domain
+        ValidationDomain: !Ref TLD
+
+  #
+  # Custom Domain Name
+  #
+  ApiDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Condition: UseCustomDomain
+    Properties:
+      DomainName: !Ref Domain
+      CertificateArn: !Ref SSL
+
+  #
+  # Wire custom domain to Api Gateway
+  #
+  BasePathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    Condition: UseCustomDomain
+    Properties:
+      DomainName: !Ref ApiDomainName
+      RestApiId: !Ref RestApi
+      Stage: !Ref Stage
+
+  #
+  # Route53 DNS record set to map our domain to API Gateway
+  #
+  DomainDNS:
+    Type: AWS::Route53::RecordSetGroup
+    Condition: UseCustomDomain
+    Properties:
+      HostedZoneName:
+        Fn::Join:
+        - ''
+        - - !Ref TLD
+          - '.'
+      RecordSets:
+      - Name: !Ref Domain
+        Type: 'A'
+        AliasTarget:
+          HostedZoneId: 'Z2J6UKNDVYI4W4' # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget.html#cfn-route53-aliastarget-hostedzoneid
+          DNSName: !GetAtt ApiDomainName.DistributionDomainName
+
+Outputs:
+  ReceiveOrderFunction:
+    Description: Receive Order Function
+    Value: !Ref ReceiveOrder
+    Export:
+      Name: !Sub '${AWS::StackName}-ReceiveOrder'
+  GetOrderFunction:
+    Description: Get Order Function
+    Value: !Ref GetOrder
+    Export:
+      Name: !Sub '${AWS::StackName}-GetOrder'
+  GetOrdersFunction:
+    Description: Gets Order Function
+    Value: !Ref GetOrders
+    Export:
+      Name: !Sub '${AWS::StackName}-GetsOrder'
+  ApiGatewayUrl:
+    Description: URL of your API endpoint
+    Value: !Join
+    - ''
+    - - 'https://'
+      - !Ref RestApi
+      - '.execute-api.'
+      - !Ref AWS::Region
+      - '.amazonaws.com/'
+      - !Ref Stage
+      - '/'
+      - !Ref Path
+  CustomDomainUrl:
+    Description: URL of your API endpoint
+    Condition: UseCustomDomain
+    Value: !Join
+    - ''
+    - - 'https://'
+      - !Ref Domain
+      - '/'
+      - !Ref Path

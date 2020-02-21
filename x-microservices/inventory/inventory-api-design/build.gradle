@@ -1,0 +1,90 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.openapitools:openapi-generator-gradle-plugin:3.3.4"
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'org.openapi.generator'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+def version_prefix = "v1"
+def version = version_prefix + ".0"
+def apiDir = "api-" + version
+
+openApiGenerate {
+    generatorName = "java"
+    inputSpec = ("${project.projectDir}/specs/" + version + "/inventory.yml").toString()
+    outputDir = ("${project.projectDir}/" + apiDir).toString()
+
+    apiPackage = "io.github.bhuwanupadhyay.inventory." + version_prefix + ".api"
+    invokerPackage = "io.github.bhuwanupadhyay.inventory." + version_prefix + ".invoker"
+    modelPackage = "io.github.bhuwanupadhyay.inventory." + version_prefix + ".model"
+
+    modelFilesConstrainedTo = [
+    ]
+    configOptions = [
+            dateLibrary: "java8"
+    ]
+
+}
+
+tasks.create(name: 'beforeGenerate') << {
+    project.delete(apiDir)
+    project.mkdir(apiDir)
+}
+
+tasks.create(name: 'afterGenerate') << {
+    def tree = fileTree(dir: apiDir, excludes: ['**/*.java', 'build.kts'])
+    tree.getFiles().forEach {
+        file -> file.delete()
+    }
+    project.delete(apiDir + "/docs")
+    project.delete(apiDir + "/.openapi-generator")
+    project.delete(apiDir + "/gradle")
+    project.delete(apiDir + "/docs")
+    project.delete(apiDir + "/.gitignore")
+
+    project.copy {
+        def rootDirectory = project.projectDir.getAbsolutePath() + "/" + apiDir
+
+        into rootDirectory + '/src/test'
+
+        from(rootDirectory + '/src/main') {
+            include '**/*.java'
+        }
+    }
+
+    project.delete(apiDir + "/src/main/java/io/github/bhuwanupadhyay/inventory/" + version_prefix + "/api")
+    project.delete(apiDir + "/src/main/java/io/github/bhuwanupadhyay/inventory/" + version_prefix + "/invoker")
+    project.delete(apiDir + "/src/test/java/io/github/bhuwanupadhyay/inventory/" + version_prefix + "/model")
+}
+
+tasks.create(name: 'buildFileGen') << {
+    project.copy {
+
+        into project.projectDir.getAbsolutePath() + "/" + apiDir
+
+        from(project.projectDir) {
+            include 'build_gradle'
+            rename('build_gradle', 'build.gradle')
+        }
+    }
+
+}
+
+tasks.create(name: 'apiGen') << {
+    tasks.beforeGenerate.execute()
+    tasks.openApiGenerate.execute()
+    tasks.afterGenerate.execute()
+    tasks.buildFileGen.execute()
+}
+

@@ -1,0 +1,102 @@
+<div class="main-container">
+  <nav class="subnav">
+    <b>&nbsp;&nbsp;Cloud Pathsala Signup</b>
+  </nav>
+  <div class="content-container">
+    <div class="content-area">
+      <form class="col-lg-12" [formGroup]="form" (ngSubmit)="signup(form.value)">
+        <div class="form-group"
+             [ngClass]="{'has-error':fh.hasError(form, 'username')}"
+        >
+          <label for="username">Username:</label>
+          <div class="alert alert-danger" *ngIf="fh.hasError(form, 'username')">
+            Username must be at least 3 characters long.
+          </div>
+          <input type="text"
+                 class="form-control"
+                 id="username"
+                 name="username"
+                 [formControl]="form.controls['username']"
+          >
+        </div>
+        <div class="form-group"
+             [ngClass]="{'has-error':fh.hasError(form, 'email')}"
+        >
+          <label for="email">Email:</label>
+          <div class="alert alert-danger" *ngIf="fh.hasError(form, 'email')">
+            Email must be at least 3 characters long.
+          </div>
+          <input type="email"
+                 class="form-control"
+                 id="email"
+                 name="email"
+                 [formControl]="form.controls['email']"
+          >
+        </div>
+        <div class="form-group"
+             [ngClass]="{'has-error':fh.hasError(form, 'name')}"
+        >
+          <label for="name">Name:</label>
+          <div class="alert alert-danger" *ngIf="fh.hasError(form, 'name')">
+            Name must be at least 3 characters long.
+          </div>
+          <input type="text"
+                 class="form-control"
+                 id="name"
+                 name="name"
+                 [formControl]="form.controls['name']"
+          >
+        </div>
+        <div class="form-group"
+             [ngClass]="{'has-error':fh.hasError(form, 'phoneNumber')}"
+        >
+          <label for="phoneNumber">Phone Number:</label>
+          <div class="alert alert-danger" *ngIf="fh.hasError(form, 'phoneNumber')">
+            Phone number must be at least 3 characters long.
+          </div>
+          <input type="text"
+                 class="form-control"
+                 id="phoneNumber"
+                 name="phoneNumber"
+                 [formControl]="form.controls['phoneNumber']"
+          >
+        </div>
+        <div [formGroup]="form.controls['password-group']">
+          <div class="form-group"
+               [ngClass]="{'has-error':fh.hasError(form, 'password-group')}"
+          >
+            <label for="pwd">Password:</label>
+            <div class="alert alert-danger" *ngIf="fh.hasError(form, 'password-group', 'password')">
+              Password must be at least 6 characters long.
+            </div>
+            <input type="password"
+                   class="form-control"
+                   id="pwd"
+                   name="password"
+                   [formControl]="fh.getControl(form, 'password-group', 'password')"
+            >
+          </div>
+          <div class="form-group"
+               [ngClass]="{'has-error':fh.hasError(form, 'password-group', 'confirm-password')}"
+          >
+            <label for="confirm-pwd">Confirm Password:</label>
+            <div class="alert alert-danger" *ngIf="fh.hasError(form, 'password-group')">Password confirmation does not
+              match the password.
+            </div>
+            <input type="password"
+                   class="form-control"
+                   id="confirm-pwd"
+                   name="confirm-password"
+                   [formControl]="fh.getControl(form, 'password-group', 'confirm-password')"
+            >
+          </div>
+        </div>
+        <button type="submit" class="btn btn-default" [disabled]="!form.valid">Signup</button>
+      </form>
+      <p class="col-lg-12"></p>
+      <p class="col-lg-12">
+        Already signed up? <a [routerLink]="'/login'">Log in</a>
+      </p>
+    </div>
+  </div>
+</div>

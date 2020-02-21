@@ -1,0 +1,7 @@
+OPizza Commons Changelog
+=============================
+
+Changes in version 1.0.0.M1 (2019-02-24)
+----------------------------------------
+* Base classes for the opizza microservices
+

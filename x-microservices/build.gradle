@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath Deps.GRADLE_DOCKER_PLUGIN_DEP
+    }
+}
+
+apply plugin: Deps.GRADLE_DOCKER_PLUGIN
+
+allprojects {
+    group = 'io.github.bhuwanupadhyay'
+    version = '1.0-SNAPSHOT'
+    
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url 'http://repo.spring.io/plugins-release/'
+        }
+    }
+}
+
+import com.bmuschko.gradle.docker.tasks.DockerInfo
+import io.github.bhuwanupadhyay.Deps
+
+task checkDockerIsAvailable(type: DockerInfo)

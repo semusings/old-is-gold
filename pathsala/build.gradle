@@ -1,0 +1,99 @@
+buildscript {
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
+    }
+}
+
+
+final def core = project(':core')
+final def studentManager = project(':student-manager')
+final def sharedServerless = project(':pathsala-serverless-backend:shared-serverless')
+final def registerStudentUseCase = project(':pathsala-serverless-backend:student-manager-serverless-backend')
+final def pathsalaUaa = project(':pathsala-serverless-backend:pathsala-uaa-backend')
+final def pathsalaBackend = project(':pathsala-backend-microservices')
+ext.awsSdkVersion = '1.11.377'
+
+configure(subprojects) {
+    group = 'org.pathsala'
+    version = getProp('newVersion') ?: '1.0-SNAPSHOT'
+}
+
+configure([
+        core,
+        pathsalaBackend,
+        studentManager,
+        sharedServerless,
+        registerStudentUseCase,
+        pathsalaUaa
+]) {
+    apply plugin: "java"
+    apply plugin: "org.sonarqube"
+
+    dependencies {
+        compile 'org.projectlombok:lombok:1.18.2'
+        compile("org.apache.commons:commons-lang3:3.7")
+        testCompile("org.junit.jupiter:junit-jupiter-api:5.2.0")
+        testRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    tasks.withType(Test) {
+        testLogging {
+            events "started", "passed", "skipped", "failed"
+        }
+    }
+
+}
+
+configure([sharedServerless]) {
+    dependencies {
+        compile(core)
+        compile("com.amazonaws:aws-lambda-java-core:1.1.0")
+        compile("com.amazonaws:aws-java-sdk-dynamodb:${awsSdkVersion}")
+        compile("com.amazonaws:aws-lambda-java-log4j:1.0.0")
+    }
+}
+
+configure([registerStudentUseCase, pathsalaUaa]) {
+    dependencies {
+        compile(sharedServerless)
+        testCompile("cloud.localstack:localstack-utils:0.1.14")
+        testCompile("com.intuit.karate:karate-junit4:0.8.0")
+        testCompile("com.intuit.karate:karate-apache:0.8.0")
+        testCompile("com.intuit.karate:karate-gatling:0.8.0.1")
+        testCompile 'net.masterthought:cucumber-reporting:3.8.0'
+    }
+
+    task buildZip(type: Zip) {
+        from compileJava
+        from processResources
+        into('lib') {
+            from configurations.runtime
+        }
+    }
+
+    build.dependsOn buildZip
+}
+
+
+String getProp(String propName) {
+    return hasProperty(propName) ?
+            (getProperty(propName) ?: System.properties[propName]) : System.properties[propName] ?:
+            System.getenv(propName)
+}

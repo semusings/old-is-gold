@@ -1,0 +1,3 @@
+= OPizza contribution guidelines
+
+You find the contribution guidelines for OPizza projects https://github.com/BhuwanUpadhyay/opizza-build/blob/master/CONTRIBUTING.adoc[here].

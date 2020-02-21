@@ -1,0 +1,216 @@
+variables:
+  POSTGRES_USER: user
+stages:
+- build
+- test
+- review
+- dast
+- staging
+- canary
+- production
+- performance
+- cleanup
+
+build:
+  stage: build
+  image: gradle:4.9.0-jdk8-alpine
+  script:
+  - build
+#  only:
+#  - branches
+
+test:
+  stage: test
+  image: gradle:4.9.0-jdk8-alpine
+  script:
+  - unit_test
+  #  only:
+  #  - branches
+  except:
+    variables:
+    - $TEST_DISABLED
+
+e2e-test:
+  stage: test
+  image: gradle:4.9.0-jdk8-alpine
+  script:
+  - e2e_test
+  #  only:
+  #  - branches
+  except:
+    variables:
+    - $E2E_TEST_DISABLED
+
+
+code_quality:
+  stage: test
+  allow_failure: true
+  image: gradle:4.9.0-jdk8-alpine
+  script:
+  - code_quality
+  #  only:
+  #  - branches
+  except:
+    variables:
+    - $CODE_QUALITY_DISABLED
+
+license_management:
+  stage: test
+  image: gradle:4.9.0-jdk8-alpine
+  allow_failure: true
+  script:
+  - license_management
+  #  only:
+  #  - branches
+  except:
+    variables:
+    - $LICENSE_MANAGEMENT_DISABLED
+
+performance:
+  stage: performance
+  image: gradle:4.9.0-jdk8-alpine
+  allow_failure: true
+  script:
+  - performance
+  #  only:
+  #    refs:
+  #    - branches
+  except:
+    variables:
+    - $PERFORMANCE_DISABLED
+
+#Static Application Security Testing
+sast:
+  stage: test
+  image: gradle:4.9.0-jdk8-alpine
+  allow_failure: true
+  script:
+  - sast
+  #  only:
+  #  - branches
+  except:
+    variables:
+    - $SAST_DISABLED
+
+dependency_scanning:
+  stage: test
+  image: gradle:4.9.0-jdk8-alpine
+  allow_failure: true
+  script:
+  - dependency_scanning
+  #  only:
+  #  - branches
+  except:
+    variables:
+    - $DEPENDENCY_SCANNING_DISABLED
+
+#Dynamic Application Security Testing
+dast:
+  stage: dast
+  image: gradle:4.9.0-jdk8-alpine
+  allow_failure: true
+  script:
+  - dast
+  #  only:
+  #    refs:
+  #    - branches
+  except:
+    refs:
+    - master
+    variables:
+    - $DAST_DISABLED
+
+review:
+  stage: review
+  script:
+  - install_dependencies
+  - deploy
+  only:
+    refs:
+    - branches
+  except:
+    refs:
+    - master
+    variables:
+    - $REVIEW_DISABLED
+
+stop_review:
+  stage: cleanup
+  script:
+  - install_dependencies
+  - delete
+  when: manual
+  allow_failure: true
+  only:
+    refs:
+    - branches
+  except:
+    refs:
+    - master
+    variables:
+    - $REVIEW_DISABLED
+
+# ---------------------------------------------------------------------------
+
+.auto_devops: &auto_devops |
+  # Auto DevOps variables and functions
+
+  function code_quality() {
+    ./gradlew sonarqube \
+          -Dsonar.organization=bhuwanupadhyay-github \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=2288c721bab3bb17ee54ddb23ead84348dba1b4d
+  }
+
+  function license_management() {
+    echo "License management is not available in your project"
+  }
+
+  function sast() {
+    echo "Static Application Security Testing is not available in your project"
+  }
+
+  function dependency_scanning() {
+    echo "Dependency scanning is not available in your project"
+  }
+
+  function build() {
+    echo "Buiding pathsala..."
+    ./gradlew clean build -x test
+    echo ""
+  }
+
+  function unit_test() {
+    echo "Testing pathsala..."
+    ./gradlew clean test
+    echo ""
+  }
+
+
+  function e2e_test() {
+    echo "E2E Testing pathsala..."
+    echo ""
+  }
+
+  function dast() {
+    echo "Dynamic Application Security Testing is not available in your project"
+  }
+
+  function performance() {
+    echo "Performance benchmarking is not available in your project"
+  }
+
+  function install_dependencies() {
+    echo "Installing dependencies..."
+  }
+
+  function delete() {
+    echo "Deleting pathsala resources..."
+  }
+
+  function deploy() {
+    echo "Deploying pathsala application..."
+  }
+
+before_script:
+- *auto_devops

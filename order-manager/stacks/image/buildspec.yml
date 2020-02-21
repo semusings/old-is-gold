@@ -1,0 +1,14 @@
+version: 0.2
+
+# Incoming environment variables
+# ECR_ACCOUNT_ID
+# ECR_IMAGE_TAG
+
+phases:
+  build:
+    commands:
+    - set -e
+    - docker build -f stacks/image/Dockerfile -t ${ECR_IMAGE_TAG} .
+  post_build:
+    commands:
+    - eval $(aws ecr get-login --registry-ids ${ECR_ACCOUNT_ID}) && docker push ${ECR_IMAGE_TAG}

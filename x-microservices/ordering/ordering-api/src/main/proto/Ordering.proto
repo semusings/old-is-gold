@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_package = "io.github.bhuwanupadhyay.ordering.contract.gen";
+option java_outer_classname = "Ordering";
+option java_multiple_files = true;
+
+message OrderRequest {
+    string customerId = 1;
+    repeated OrderRequestLine orderRequestLines = 2;
+
+    message OrderRequestLine {
+        int32 productId = 1;
+        int32 quantity = 2;
+    }
+
+}
+
+message OrderView {
+    string customerId = 1;
+    repeated OrderViewLine orderViewLines = 2;
+
+    message OrderViewLine {
+        int32 productId = 1;
+        int32 quantity = 2;
+    }
+}

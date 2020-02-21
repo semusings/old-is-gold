@@ -1,0 +1,8 @@
+type: object
+title: create product request
+description: request body of request while creating product in inventory.
+required:
+  - name
+properties:
+  name:
+    type: string

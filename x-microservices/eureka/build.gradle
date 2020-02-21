@@ -1,0 +1,45 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.0.6.RELEASE'
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: "com.bmuschko.docker-spring-boot-application"
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+dependencies {
+    compile 'org.springframework.cloud:spring-cloud-config-client'
+    compile 'org.springframework.cloud:spring-cloud-starter'
+    compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+    compile 'org.springframework.retry:spring-retry'
+    compile 'org.springframework.boot:spring-boot-starter-actuator'
+    
+    testCompileOnly "org.projectlombok:lombok"
+    testCompile 'org.assertj:assertj-core:3.11.1'
+    testCompile 'org.mockito:mockito-junit-jupiter:2.23.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-params:5.1.0'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'io.projectreactor:reactor-test'
+    testCompile 'io.rest-assured:rest-assured:3.2.0'
+
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.RELEASE"
+    }
+}
+
+[bootJar, bootRun]*.enabled = true
+jar.enabled = false
+
+docker {
+    springBootApplication {
+        baseImage = 'openjdk:8-jre-alpine'
+    }
+}

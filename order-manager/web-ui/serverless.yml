@@ -1,0 +1,17 @@
+service: bj-SPA-site
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: dev
+  region: us-east-1
+
+plugins:
+- serverless-finch
+
+custom:
+  client:
+    bucketName: developerbhuwan.com
+    distributionFolder: dist/web-ui
+    indexDocument: index.html
+    errorDocument: index.html

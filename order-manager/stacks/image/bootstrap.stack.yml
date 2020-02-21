@@ -1,0 +1,224 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Serverless Stack CI/CD - Image
+
+Parameters:
+  EcrRepo:
+    Type: String
+    Description: Ecr repository name
+  GitHubOwner:
+    Description: The name of the GitHub repository owner
+    Type: String
+  GitHubToken:
+    Type: String
+    Description: GitHub repository OAuth token
+    NoEcho: true
+  GitHubRepo:
+    Type: String
+    Description: GitHub repository name
+
+Resources:
+
+  #
+  # Bucket used by the pipelines to store artifacts.
+  #
+  PipelinesBucket:
+    Description: The artifact bucket required for inter-stage data exchange
+    Type: AWS::S3::Bucket
+
+  #
+  # IAM Role needed by the pipelines
+  #
+  CodePipelineRole:
+    Description: The role CodePipeline will assume during pipeline execution
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service:
+            - codepipeline.amazonaws.com
+          Action: sts:AssumeRole
+
+  CodePipelinePolicy:
+    Description: Policy for the CodePipeline Role
+    DependsOn: CodePipelineRole
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName:
+        Fn::Join:
+        - ''
+        - - Ref: AWS::StackName
+          - '-pipeline-policy'
+      Roles:
+      - !Ref CodePipelineRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Action:
+          - s3:*
+          Effect: Allow
+          Resource:
+          - !GetAtt PipelinesBucket.Arn
+          - !Join ["", [!GetAtt PipelinesBucket.Arn, "*"]]
+        - Action:
+          - cloudformation:*
+          Effect: Allow
+          Resource:
+          - !Sub arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*
+        - Action:
+          - codepipeline:*
+          Effect: Allow
+          Resource:
+          - !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:*
+        - Action:
+          - codebuild:StartBuild
+          - codebuild:BatchGetBuilds
+          - codebuild:StopBuild
+          Effect: Allow
+          Resource:
+          - '*'
+
+  #
+  # IAM role needed by our CodeBuild
+  #
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+        - Effect: Allow
+          Action:
+          - sts:AssumeRole
+          Principal:
+            Service:
+            - codebuild.amazonaws.com
+  CodeBuildPolicy:
+    Type: AWS::IAM::Policy
+    Description: Policy for the codebuild execution
+    DependsOn: CodeBuildRole
+    Properties:
+      PolicyName:
+        Fn::Join:
+        - ''
+        - - Ref: AWS::StackName
+          - '-codebuild-policy'
+      Roles:
+      - !Ref CodeBuildRole
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - '*'
+          Resource:
+          - '*'
+  #
+  # ECR Image Repository
+  #
+  ImageRepository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: !Ref EcrRepo
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+        - Sid: AllowPull
+          Effect: Allow
+          Action:
+          - "ecr:GetAuthorizationToken"
+          - "ecr:BatchCheckLayerAvailability"
+          - "ecr:GetDownloadUrlForLayer"
+          - "ecr:GetRepositoryPolicy"
+          - "ecr:DescribeRepositories"
+          - "ecr:ListImages"
+          - "ecr:DescribeImages"
+          - "ecr:BatchGetImage"
+          - "ecr:InitiateLayerUpload"
+          - "ecr:UploadLayerPart"
+          - "ecr:CompleteLayerUpload"
+          - "ecr:PutImage"
+          Principal:
+            Service: "codebuild.amazonaws.com"
+
+  #
+  # Code Build project.
+  # - Package the docker image
+  #
+  ImageCodeBuildProd:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:1.12.1
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+        - Name: ECR_ACCOUNT_ID
+          Value: !Ref AWS::AccountId
+        - Name: ECR_IMAGE_TAG
+          Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepo}:latest"
+      Name: !Sub "${AWS::StackName}-image-code-build"
+      ServiceRole: !GetAtt CodeBuildRole.Arn
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: stacks/image/buildspec.yml
+      TimeoutInMinutes: 10 # must be between 5 minutes and 8 hours
+
+  #
+  # Pipelines that create/update the ecr image within the project
+  #
+  Pipeline:
+    Description: Serverless Stack - Pipeline
+    Type: AWS::CodePipeline::Pipeline
+    DependsOn:
+    - CodePipelinePolicy
+    - ImageCodeBuildProd
+    Properties:
+      RestartExecutionOnUpdate: True
+      RoleArn: !GetAtt CodePipelineRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref PipelinesBucket
+      Stages:
+      - Name: Source
+        Actions:
+        - Name: CloneRepository
+          ActionTypeId:
+            Category: Source
+            Owner: ThirdParty
+            Version: 1
+            Provider: GitHub
+          OutputArtifacts:
+          - Name: GitSource
+          Configuration:
+            Owner: !Ref GitHubOwner
+            Branch: 'master'
+            Repo: !Ref GitHubRepo
+            OAuthToken: !Ref GitHubToken
+          RunOrder: 1
+      - Name: ImagePackage
+        Actions:
+        - Name: Package
+          ActionTypeId:
+            Category: Build
+            Owner: AWS
+            Provider: CodeBuild
+            Version: 1
+          Configuration:
+            ProjectName: !Ref ImageCodeBuildProd
+          InputArtifacts:
+          - Name: GitSource
+          OutputArtifacts:
+          - Name: PackageOutput
+          RunOrder: 1
+
+Outputs:
+  CodeBuildImage:
+    Description: Docker image with Maven libraries
+    Export:
+      Name: !Ref EcrRepo
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepo}:latest"

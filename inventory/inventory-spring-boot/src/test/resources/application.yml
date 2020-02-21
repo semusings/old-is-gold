@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    data: classpath:items.sql
+  h2:
+    console:
+      enabled: true
+  jpa:
+    open-in-view: true

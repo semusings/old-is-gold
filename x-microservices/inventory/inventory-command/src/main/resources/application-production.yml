@@ -1,0 +1,9 @@
+server:
+  port: 8080
+logging:
+  file: logs/inventory_command.production.log
+  pattern:
+    file: "%d %-5level [%thread] %logger{0} : %msg%n"
+  level:
+    org.springframework.web: WARN
+    io.github.bhuwanupadhyay: WARN

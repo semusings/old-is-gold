@@ -1,0 +1,3 @@
+plugins {
+    id "dk.danskespil.gradle.plugins.terraform" version "0.0.8"
+}

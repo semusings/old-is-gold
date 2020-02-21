@@ -1,0 +1,6 @@
+OPizza Build - Changelog
+=============================
+
+Changes in version 1.0.0.M1 (2019-02-16)
+----------------------------------------
+* #1 - Add formatter configuration for SD projects.

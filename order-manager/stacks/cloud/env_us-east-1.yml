@@ -1,0 +1,2 @@
+lambdaExecSecurityGroups: ["sg-0202abeefd5bcfe51"]
+subnets: ["subnet-0722e7fcc20cd641f", "subnet-0f62205b4b09537a0"]

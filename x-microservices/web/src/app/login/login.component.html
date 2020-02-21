@@ -1,0 +1,36 @@
+<mat-grid-list cols="3" rowHeight="1:1">
+  <mat-grid-tile>OMS 1.0</mat-grid-tile>
+  <mat-grid-tile>
+    <mat-card class="login-card">
+      <mat-card-title>
+        Login
+      </mat-card-title>
+      <mat-card-content>
+        <form class="login-form">
+          <mat-form-field class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="Email" name="email">
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput placeholder="Password" name="password" type="password">
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="login()" color="primary">LOGIN</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-card>
+      <mat-card-content>
+        <button (click)="signUp()" color="primary" mat-flat-button>Register User&nbsp;&nbsp;</button>
+      </mat-card-content>
+      <mat-card-content>
+        <button (click)="signInByGoogle()" color="accent" mat-flat-button>Sign In Google</button>
+      </mat-card-content>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>
+

@@ -1,0 +1,18 @@
+sudo: required
+language: java
+services:
+- docker
+install: true
+script:
+- /bin/pipeline-build.sh
+- /bin/pipeline-integration-test.sh
+- /bin/pipeline-scan.sh
+- /bin/pipeline-e2e.sh
+after_success:
+- bin/pipeline-release-production.sh $TRAVIS_BRANCH $TRAVIS_BUILD_NUMBER
+before_cache:
+- sudo rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"

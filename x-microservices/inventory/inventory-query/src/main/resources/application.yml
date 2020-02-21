@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: inventory-query
+server:
+  port: 9001
+eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 3
+    lease-expiration-duration-in-seconds: 5

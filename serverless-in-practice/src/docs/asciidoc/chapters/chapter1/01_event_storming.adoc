@@ -1,0 +1,2 @@
+== Event storming - flow of events in domain
+

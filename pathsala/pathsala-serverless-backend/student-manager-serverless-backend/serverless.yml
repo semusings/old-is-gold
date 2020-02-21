@@ -1,0 +1,57 @@
+service: student-manager-service
+
+provider:
+  name: aws
+  runtime: java8
+  region: us-east-1
+  iamRoleStatements:
+  - Effect: "Allow"
+    Resource: "*"
+    Action:
+    - "dynamodb:*"
+  - Effect: "Allow"
+    Resource: "*"
+    Action:
+    - "codedeploy:*"
+
+plugins:
+- serverless-plugin-aws-alerts
+- serverless-plugin-canary-deployments
+
+package:
+  artifact: build/distributions/student-manager-serverless-backend-1.0-SNAPSHOT.zip
+
+functions:
+  register-student:
+    handler: pathsala.serverless.student.RegisterStudentHandler
+    events:
+    - http:
+        path: students
+        method: post
+  fetch-students:
+    handler: pathsala.serverless.student.FetchStudentHandler
+    events:
+    - http:
+        path: students
+        method: get
+  approve-student:
+    handler: pathsala.serverless.student.ApproveStudentHandler
+    events:
+    - http:
+        path: students/{studentId}/approve
+        method: post
+resources:
+  Resources:
+    PSStudent:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: PSStudent
+        AttributeDefinitions:
+        - AttributeName: studentId
+          AttributeType: S
+        KeySchema:
+        - AttributeName: studentId
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

@@ -1,0 +1,30 @@
+version: 0.1
+stack:
+  name: order-manager-pipeline-image-cicd
+  template:
+    file: bootstrap.stack.yml
+    # Stacks are uploaded here prior to deployment.  The bucket is created if it doesn't exist.
+    # The name can be the same for all your _cim.yml files.
+    bucket: order-manager-pipeline-image # Note: Update this with your bucket name.
+
+  #
+  # Define stack input parameters.
+  #
+  parameters:
+    EcrRepo: 'order-manager-pipeline-image'
+    GitHubOwner: 'BhuwanUpdhyay'
+    GitHubRepo: 'order-manager'
+    GitHubToken: '${kms.decrypt(AQICAHhEu0SGW4eL8jDdaAqnmXMY3BkS+pzJSgp0iC8Q55kTdwEH5d5oQatEWlXcJVvj8IKWAAAAhzCBhAYJKoZIhvcNAQcGoHcwdQIBADBwBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNfHOIwQ+B+aZ7ZPawIBEIBDURcjvT0xj3ifif6XGuYpr4cWrNKK0CTpZgE0weo0++K9fsJzT9NwEQ/Yt1l2Ne2L+W0SYwHy4kqiQzJwbUII0ftPxQ==)}'
+
+  #
+  # Define stack capabilities required.
+  #
+  capabilities:
+  - 'CAPABILITY_IAM'
+  - 'CAPABILITY_NAMED_IAM'
+
+#
+# Define global tags.
+#
+#  tags:
+#    app: 'cim-stack'

@@ -1,0 +1,25 @@
+version: 0.2
+phases:
+  install:
+    commands:
+  pre_build:
+    commands:
+    - set -e
+    - echo "[ Compile ] started on" `date`
+    - mvn clean compile
+  build:
+    commands:
+    - echo "[ Unit Testing | Quality Check | Linting | Packaging ] started on" `date`
+    - mvn -T 1C package
+    - ./stacks/scripts/run_acceptance_tests.sh
+    - ./stacks/scripts/deploy_on_production.sh
+  #    - cp lambda-bundle/target/lambda.jar stacks/api/lambda.jar
+  post_build:
+    commands:
+    - echo "[ Done ]" `date`
+#    - aws cloudformation package --template-file stacks/api/api.stack.yml --s3-bucket ${Bucket} --output-template-file api.stack.output.yml
+#artifacts:
+#  files:
+#  - api.stack.output.yml
+#  - lambda.jar
+#  discard-paths: yes

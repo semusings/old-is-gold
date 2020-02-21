@@ -1,0 +1,8 @@
+type: object
+title: create product response
+description: Once product created in inventory. The product id must be not null.
+properties:
+  id:
+    type: string
+  name:
+    type: string

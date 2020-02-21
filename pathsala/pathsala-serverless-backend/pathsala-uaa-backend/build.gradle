@@ -1,0 +1,6 @@
+dependencies {
+    compile("com.amazonaws:aws-java-sdk-cognitoidentity:${awsSdkVersion}")
+    compile("com.amazonaws:aws-java-sdk-cognitoidp:${awsSdkVersion}")
+}
+
+tasks.withType(Test) { enabled = false }
