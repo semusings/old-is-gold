@@ -88,7 +88,7 @@
         <assertj>3.11.1</assertj>
         <hamcrest>1.3</hamcrest>
         <jacoco>0.8.3</jacoco>
-        <junit>4.12</junit>
+        <junit>4.13.1</junit>
         <kotlin>1.3.20</kotlin>
         <logback>1.2.3</logback>
         <lombok>1.18.4</lombok>
